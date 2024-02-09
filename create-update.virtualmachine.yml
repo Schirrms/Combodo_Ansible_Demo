@@ -50,9 +50,9 @@
       ansible.builtin.set_fact:
         ci_id: "{{ itop_obj_key[0] }}"
 
-    - name: Set interfaces for the VM 
+    - name: Set interfaces for the VM
       ansible.builtin.include_tasks: create-update-vm-interfaces-sub.yml
-      loop: "{{ vm_interfaces }}"  
+      loop: "{{ vm_interfaces }}"
 
     - name: Set contacts for the VM
       ansible.builtin.include_tasks: create-update-link-users-sub.yml

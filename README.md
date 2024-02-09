@@ -4,17 +4,17 @@ Some Ansible Demo with the Combodo Ansible Role
 
 ## Goals
 
-As I converted the combodo Ansible playbook `itop.core.write.yml` as an Ansible role (The repo is here : [Combodo Ansible](https://github.com/Schirrms/combodo_ansible) ), I thought I could also put here some 'simple' case usage examples.
+As I converted the combodo Ansible playbook `itop.core.write.yml` as an Ansible role (The repo is here : [Combodo Ansible](https://github.com/Schirrms/combodo_ansible) ), I thought I might as well show some examples of "simple" use cases here.
 
 Bear in mind that, although directly usable, those are just examples, to hopefully helps you to create your own workflows.
 
-Also, all examples here have been tested on a full new iTop 3.1.1 installation, using the iTop demo dataset, without any extension (you don't need any iTop extension to use the `itop.core.write.yml` Ansible playbook).
+Also, all examples here have been tested on a fresh new iTop 3.1.1 installation, using the iTop demo dataset, without any extension (you don't need any iTop extension to use the `itop.core.write.yml` Ansible playbook).
 
 ## Usage
 
 ### Setup
 
-Prerequisite: having a account member of 'Administrator' and 'REST Services User' profiles. For my demo, I use the admin account.
+Prerequisite: having a account member of `Administrator` and `REST Services User` profiles. For my demo, I use the `admin` account.
 
 Download the repo, and setup your var in the file `host_vars/localhost.yml`
 There is a sample file (coming directly from the original playbook): `host_vars/localhost_yml.sample`. There are to many information here for now, but you should set up as a bare minimal:
@@ -53,14 +53,17 @@ org_name: "Demo"
 vm_name: "Demo_Ansible_Test_VM"
 vm_ip: "10.64.65.169"
 vm_host: "Cluster1"
-vm_osfamily: "Oracle Linux"
-vm_osversion: "18.04 LTS"
-vm_cpu: "1"
+vm_osfamily: "Ubuntu server"
+vm_osversion: "22.04 LTS"
+vm_cpu: "2"
 vm_ram: "1024"
 vm_move2prod: "2024-02-08"
-vm_int_name: "ens192"
-vm_int_mac: "ef:34:56:78:90:ab"
-vm_int_speed: "10000"
+vm_interfaces: 
+  - { "name":"ens192", "mac":"ef:34:56:78:90:ab", "speed": "10000" }
+  - { "name":"eth0", "mac":"11:22:33:44:55:66", "speed": "1000" }
+vm_contacts:
+  - "claude.monet@demo.com"
+  - "anna.gavalda@it.com"
 ~~~
 
 With this file, you can then run this command:
@@ -75,12 +78,12 @@ TASK [schirrms.combodo_ansible.itop_core_write : Get fields] *******************
 ok: [localhost]
 
 PLAY RECAP *****************************************************************************************************************
-localhost                  : ok=38   changed=2    unreachable=0    failed=0    skipped=22   rescued=0    ignored=0
+localhost                  : ok=100  changed=5    unreachable=0    failed=0    skipped=60   rescued=0    ignored=0
 ~~~
 
 And one Virtual Machine is created.
 
-As expected in Ansible, if you run the same playbook again:
+As expected with Ansible, if you run the same playbook again:
 
 ~~~bash
 ansible-playbook -e "@files/VM_Ansible_Test.yml" create-update.virtualmachine.yml
@@ -92,7 +95,7 @@ TASK [schirrms.combodo_ansible.itop_core_write : Get fields] *******************
 ok: [localhost]
 
 PLAY RECAP *****************************************************************************************************************
-localhost                  : ok=40   changed=0    unreachable=0    failed=0    skipped=22   rescued=0    ignored=0
+localhost                  : ok=105  changed=0    unreachable=0    failed=0    skipped=55   rescued=0    ignored=0
 ~~~
 
 No changes where done in iTop.
