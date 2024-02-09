@@ -1,0 +1,49 @@
+#
+# @copyright   Copyright (C) 2023 Combodo SARL
+# @license     http://opensource.org/licenses/AGPL-3.0
+#
+# This is the file that defines the parameters used by the Ansible controller to activate iTop WEB services
+#
+---
+########################################
+# General parameters to connect to iTop
+# URL to reach iTop web services
+itop_root: http://15.0.0.14/dev/3.x/current
+itop_ws_version: 1.3
+
+# Connection parameters
+# If you prefer to encrypt these parameter in an Ansible vault for security reasons:
+#  - Comment the following 2 lines
+#  - Store the parameter in a local itopvault.yml file
+#  You may refer to Ansible documentation: https://docs.ansible.com/ansible/latest/vault_guide/index.html
+itop_ws_auth_user: admin
+itop_ws_auth_pwd: admin
+
+# UUID in iTop of the Ansible application to work with
+itop_ws_ansible_uuid: DEMO_UUID
+
+# Name of the inventory to consider
+itop_ws_ansible_inventory: DMZ-1
+
+#######################################
+# Parameters to get the inventory file
+#   Format: possible values: INI, YML
+itop_ws_ansible_inventory_format: YML
+
+#   Location and name of the inventory file on the Ansible controller
+local_inventory_path: ../data/
+local_inventory_name: inventory
+
+# Backup the previous inventory file: True / False
+backup_inventory: True
+
+################################################
+# Parameters to get a list of hosts from an OQL
+#   OQL
+itop_ws_ansible_oql_for_hosts: SELECT VirtualMachine
+
+#   Attribute to read
+itop_ws_ansible_attribute: name
+
+#   Save the result in a file (next to the itop_hosts variable)
+hosts_in_file: True
