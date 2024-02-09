@@ -17,6 +17,15 @@ Also, all examples here have been tested on a fresh new iTop 3.1.1 installation,
 Prerequisite: having a account member of `Administrator` and `REST Services User` profiles. For my demo, I use the `admin` account.
 
 Download the repo, and setup your var in the file `host_vars/localhost.yml`
+
+As the samples use the Combodo's Ansible role, you have to install a local copy of this role. This has to be done once.
+
+The simplest way is trough then `ansible-galaxy` command:
+
+~~~bash
+ansible-galaxy collection install -r collections/requirements.yml
+~~~
+
 There is a sample file (coming directly from the original playbook): `host_vars/localhost_yml.sample`. There are to many information here for now, but you should set up as a bare minimal:
 
 ~~~yaml
