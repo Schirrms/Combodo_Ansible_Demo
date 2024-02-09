@@ -2,11 +2,14 @@ org_name: "Demo"
 vm_name: "Demo_Ansible_Test_VM"
 vm_ip: "10.64.65.169"
 vm_host: "Cluster1"
-vm_osfamily: "Oracle Linux"
-vm_osversion: "18.04 LTS"
-vm_cpu: "1"
+vm_osfamily: "Ubuntu server"
+vm_osversion: "22.04 LTS"
+vm_cpu: "2"
 vm_ram: "1024"
 vm_move2prod: "2024-02-08"
-vm_int_name: "ens192"
-vm_int_mac: "ef:34:56:78:90:ab"
-vm_int_speed: "10000"
+vm_interfaces: 
+  - { "name":"ens192", "mac":"ef:34:56:78:90:ab", "speed": "10000" }
+  - { "name":"eth0", "mac":"11:22:33:44:55:66", "speed": "1000" }
+vm_contacts:
+  - "claude.monet@demo.com"
+  - "anna.gavalda@it.com"

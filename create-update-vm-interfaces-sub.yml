@@ -1,0 +1,25 @@
+#
+# create-update-vm-interfaces-sub.yml
+# create/update interfaces on a CI
+# Used as a sub block in other playbooks
+# as the Ansible 'block:' directive does not support loop
+#
+# this playbook is not intended to run standalone
+#
+# Schirrms 2024
+---
+- name: Set variables for the VM interface creation
+  ansible.builtin.set_fact:
+    itop_obj_class: "LogicalInterface"
+    itop_key:
+      "name": "{{ item.name }}"
+      "virtualmachine_id": "{{ ci_id }}"
+    itop_fields:
+      "name": "{{ item.name }}"
+      "virtualmachine_id": "{{ ci_id }}"
+      "macaddress": "{{ item.mac }}"
+      "speed": "{{ item.speed }}"
+
+- name: Call iTop role to create or update the VM Interface
+  ansible.builtin.import_role:
+    name: schirrms.combodo_ansible.itop_core_write

@@ -7,9 +7,6 @@
 #  - output_fields = List of attributes to get from iTop once creation or update is done
 # These can be set manually or result from the output of other playbooks, modules...
 #
-# Important note:
-# The output_fields are used to detected changes between existing object and updated one.
-#
 ---
 - name: Create a Virtual Machine in iTop
   hosts: localhost
@@ -38,34 +35,25 @@
             "name": "{{ vm_osfamily }}"
           "osversion_id":
             "name": "{{ vm_osversion }}"
+            "osfamily_id":
+              "name": "{{ vm_osfamily }}"
           "cpu": "{{ vm_cpu }}"
           "ram": "{{ vm_ram }}"
           "managementip": "{{ vm_ip }}"
           "move2production": "{{ vm_move2prod }}"
 
-- name: Call iTop role to create or update the VM
-  gather_facts: false
-  hosts: localhost
-  roles:
-    - schirrms.combodo_ansible.itop_core_write
+    - name: Call iTop role to create or update the VM
+      ansible.builtin.import_role:
+        name: schirrms.combodo_ansible.itop_core_write
 
-  tasks:
-    - name: Set variables for the VM interface creation
+    - name: Store the IPv4 id for future use
       ansible.builtin.set_fact:
-        itop_obj_class: "LogicalInterface"
-        itop_key:
-          "name": "{{ vm_int_name }}"
-          "virtualmachine_id":
-            "name": "{{ vm_name }}"
-        itop_fields:
-          "name": "{{ vm_int_name }}"
-          "virtualmachine_id":
-            "name": "{{ vm_name }}"
-          "macaddress": "{{ vm_int_mac }}"
-          "speed": "{{ vm_int_speed }}"
+        ci_id: "{{ itop_obj_key[0] }}"
 
-- name: Call iTop role to create or update the VM Interface
-  gather_facts: false
-  hosts: localhost
-  roles:
-    - schirrms.combodo_ansible.itop_core_write
+    - name: Set interfaces for the VM 
+      ansible.builtin.include_tasks: create-update-vm-interfaces-sub.yml
+      loop: "{{ vm_interfaces }}"  
+
+    - name: Set contacts for the VM
+      ansible.builtin.include_tasks: create-update-link-users-sub.yml
+      loop: "{{ vm_contacts }}"

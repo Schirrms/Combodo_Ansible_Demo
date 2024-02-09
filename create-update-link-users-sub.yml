@@ -1,0 +1,25 @@
+#
+# create-update-link-users-sub.yml
+# Link users to a FunctionalCI in iTop
+# Used as a sub block in other playbooks
+# as the Ansible 'block:' directive does not support loop
+#
+# this playbook is not intended to run standalone
+#
+# Schirrms 2024
+---
+- name: Set vars to add contacts to the VM
+  ansible.builtin.set_fact:
+    itop_obj_class: "lnkContactToFunctionalCI"
+    itop_key:
+      "functionalci_id": "{{ ci_id }}"
+      "contact_id":
+        "email": "{{ item }}"
+    itop_fields:
+      "functionalci_id": "{{ ci_id }}"
+      "contact_id":
+        "email": "{{ item }}"
+
+- name: Call iTop role to create or update the VM Interface
+  ansible.builtin.import_role:
+    name: schirrms.combodo_ansible.itop_core_write
