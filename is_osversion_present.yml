@@ -1,0 +1,32 @@
+#
+# This playbook is a demonstration of the 'ispresent' role.
+# this demo runs on the OSVersion class, as there are more than one osversion 
+# named '22.04 LTS' so this wil be an interesting test
+#
+---
+- name: Query the number of 'OSVersion' {{ osversion }}
+  hosts: localhost
+  gather_facts: false
+  vars:
+    # Based on the values in the Combodo's Demo Set
+    # should give two as an answer
+    osversion: '22.04 LTS'
+    # should give one as an answer
+    # osversion: '18.04 LTS'
+    # should give 0 as an answer
+    # osversion: '32.04 LTS'
+
+  tasks:
+    - name: Set variables for the OSVersion query
+      ansible.builtin.set_fact:
+        itop_obj_class: "OSVersion"
+        itop_key:
+          "name": "{{ osversion }}"
+
+    - name: Call iTop role to count the items
+      ansible.builtin.import_role:
+        name: schirrms.combodo_ansible.itop_core_ispresent
+
+    - name: Display the result
+      ansible.builtin.debug:
+        msg: "the OSVersion '{{ osversion }}' was found {{ itop_found_items }} time(s)"

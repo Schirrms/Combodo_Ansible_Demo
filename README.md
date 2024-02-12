@@ -1,6 +1,6 @@
 # Combodo Ansible Demo
 
-Some Ansible Demo with the Combodo Ansible Role
+Some Ansible Demo with the Combodo Ansible Roles
 
 ## Goals
 
@@ -9,6 +9,12 @@ As I converted the combodo Ansible playbook `itop.core.write.yml` as an Ansible 
 Bear in mind that, although directly usable, those are just examples, to hopefully helps you to create your own workflows.
 
 Also, all examples here have been tested on a fresh new iTop 3.1.1 installation, using the iTop demo dataset, without any extension (you don't need any iTop extension to use the `itop.core.write.yml` Ansible playbook).
+
+New : as I added two new roles in the [Combodo Ansible](https://github.com/Schirrms/combodo_ansible) repo, there are also two new demo in this folder :
+
+To test the `itop.core.ispresent` role, you can use the demo `is_osversion_present.yml` (More info [below](./###reading-the-number-of-a-specific-os-version) )
+
+To test the `itop.core.read` role, you can use the demo `display_hypervisor.yml` (More info [below](./###show-information-about-one-hypervisor))
 
 ## Usage
 
@@ -108,3 +114,97 @@ localhost                  : ok=105  changed=0    unreachable=0    failed=0    s
 ~~~
 
 No changes where done in iTop.
+
+### Reading the number of a specific OS Version
+
+This is a very simple example. The OSVersion name is set in the playbook so you don't need any external files.
+Remember that the expected results are on a clean installation of the Combodo's demoset.
+
+if `osversion: '22.04 LTS'` then, launching this command:
+
+~~~bash
+ansible-playbook is_osversion_present.yml
+[WARNING]: provided hosts list is empty, only localhost is available. Note that the implicit localhost does not match 'all'
+
+PLAY [Query the number of 'OSVersion' 22.04 LTS] *************************************************************************
+…………………
+
+TASK [Display the result] ************************************************************************************************
+ok: [localhost] => {
+    "msg": "the OSVersion '22.04 LTS' was found 2 time(s)"
+}
+
+PLAY RECAP ***************************************************************************************************************
+localhost                  : ok=8    changed=0    unreachable=0    failed=0    skipped=2    rescued=0    ignored=0  
+~~~
+
+Of course, instead of editing the file, you can also set the osversion on command line, so :
+
+~~~bash
+ansible-playbook -e "osversion='11.5'" is_osversion_present.yml
+[WARNING]: provided hosts list is empty, only localhost is available. Note that the implicit localhost does not match 'all'
+
+PLAY [Query the number of 'OSVersion' 11.5] *******************************************************************************
+…………………
+TASK [Display the result] *************************************************************************************************
+ok: [localhost] => {
+    "msg": "the OSVersion '11.5' was found 1 time(s)"
+}
+
+PLAY RECAP ****************************************************************************************************************
+localhost                  : ok=8    changed=0    unreachable=0    failed=0    skipped=2    rescued=0    ignored=0 
+~~~
+
+### Show information about one hypervisor
+
+Again a very simple example. The hypervisor name is set in the playbook so you don't need any external files.
+Remember that the expected results are on a clean installation of the Combodo's demoset.
+
+With `hypervisor: 'ESX1'` you can run the script this way:
+
+~~~bash
+ansible-playbook display_hypervisor.yml
+[WARNING]: provided hosts list is empty, only localhost is available. Note that the implicit localhost does not match 'all'
+
+PLAY [Queries hypervisors in iTop] ***************************************************************************************
+…………………
+TASK [Display Hypervisor values] ******************************************************************************************
+ok: [localhost] => {
+    "itop_output_values": [
+        {
+            "name": "ESX1",
+            "organization_name": "Demo",
+            "server_name": "Server1",
+            "status": "production"
+        }
+    ]
+}
+
+TASK [Display Hypervisor 0 Server name] ***********************************************************************************
+ok: [localhost] => {
+    "itop_output_values[0].server_name": "Server1"
+}
+
+PLAY RECAP ****************************************************************************************************************
+localhost                  : ok=9    changed=0    unreachable=0    failed=0    skipped=2    rescued=0    ignored=0
+~~~
+
+Setting another value in the file for hypervisor, or changing the value on the command line:
+
+~~~bash
+ansible-playbook display_hypervisor.yml -e 'hypervisor="unresistant_hypervisor"'
+[WARNING]: provided hosts list is empty, only localhost is available. Note that the implicit localhost does not match 'all'
+
+PLAY [Queries hypervisors in iTop] ****************************************************************************************
+……………………
+TASK [Display Hypervisor values] ******************************************************************************************
+ok: [localhost] => {
+    "itop_output_values": ""
+}
+
+TASK [Display Hypervisor 0 Server name] ***********************************************************************************
+skipping: [localhost]
+
+PLAY RECAP ****************************************************************************************************************
+localhost                  : ok=8    changed=0    unreachable=0    failed=0    skipped=3    rescued=0    ignored=0
+~~~
