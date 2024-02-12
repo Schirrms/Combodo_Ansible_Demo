@@ -1,6 +1,6 @@
 #
 # This playbook is a demonstration of the 'ispresent' role.
-# this demo runs on the OSVersion class, as there are more than one osversion 
+# this demo runs on the OSVersion class, as there are more than one osversion
 # named '22.04 LTS' so this wil be an interesting test
 #
 ---

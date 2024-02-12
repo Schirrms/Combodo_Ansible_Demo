@@ -12,9 +12,9 @@ Also, all examples here have been tested on a fresh new iTop 3.1.1 installation,
 
 New : as I added two new roles in the [Combodo Ansible](https://github.com/Schirrms/combodo_ansible) repo, there are also two new demo in this folder :
 
-To test the `itop.core.ispresent` role, you can use the demo `is_osversion_present.yml` (More info [below](./###reading-the-number-of-a-specific-os-version) )
+To test the `itop.core.ispresent` role, you can use the demo `is_osversion_present.yml` (More info [below](###reading-the-number-of-a-specific-os-version) )
 
-To test the `itop.core.read` role, you can use the demo `display_hypervisor.yml` (More info [below](./###show-information-about-one-hypervisor))
+To test the `itop.core.read` role, you can use the demo `display_hypervisor.yml` (More info [below](###show-information-about-one-hypervisor))
 
 ## Usage
 
@@ -119,6 +119,13 @@ No changes where done in iTop.
 
 This is a very simple example. The OSVersion name is set in the playbook so you don't need any external files.
 Remember that the expected results are on a clean installation of the Combodo's demoset.
+
+*** Warning : even if the returning value, `itop_found_items` seems realistically a number, Ansible's set_fact stores the value as a string.
+So, if you want to know if a CI is present, the correct test would be:
+
+~~~yaml
+    when: itop_found_items|int == 1
+~~~
 
 if `osversion: '22.04 LTS'` then, launching this command:
 

@@ -7,10 +7,14 @@
 #  - output_fields = List of attributes to get from iTop once creation or update is done
 # These can be set manually or result from the output of other playbooks, modules...
 #
+# Update : if the vm_move2prod is not populated and if the object is to be created
+# then the vm_move2prod is set to the current date.
+# This is to illustrate one possible use of the `itop.core.ispresent` role
+#
 ---
 - name: Create a Virtual Machine in iTop
   hosts: localhost
-  gather_facts: false
+  gather_facts: true # needed to have the current date!
 
   tasks:
     - name: Set variables for the VM creation/update
@@ -40,7 +44,25 @@
           "cpu": "{{ vm_cpu }}"
           "ram": "{{ vm_ram }}"
           "managementip": "{{ vm_ip }}"
-          "move2production": "{{ vm_move2prod }}"
+
+    - name: Set the move to production date to today if needed
+      when: (vm_move2prod is undefined) or (vm_move2prod is not ansible.builtin.regex("^\d{4}-\d{2}-\d{2}$"))
+      block:
+        - name: Check if the VM already exists in iTop
+          ansible.builtin.import_role:
+            name: schirrms.combodo_ansible.itop_core_ispresent
+
+        - name: Set the current date as 'move2production'
+          ansible.builtin.set_fact:
+            itop_fields: "{{ itop_fields | combine({'move2production': ansible_date_time.date}) }}"
+          when: itop_found_items | int == 0
+
+    - name: Merge static mode2production date if defined
+      ansible.builtin.set_fact:
+        itop_fields: "{{ itop_fields | combine({'move2production': vm_move2prod}) }}"
+      when:
+        - vm_move2prod is defined
+        - vm_move2prod is ansible.builtin.regex("^\d{4}-\d{2}-\d{2}$")
 
     - name: Call iTop role to create or update the VM
       ansible.builtin.import_role:
