@@ -12,9 +12,11 @@ Also, all examples here have been tested on a fresh new iTop 3.1.1 installation,
 
 New : as I added two new roles in the [Combodo Ansible](https://github.com/Schirrms/combodo_ansible) repo, there are also two new demo in this folder :
 
-To test the `itop.core.ispresent` role, you can use the demo `is_osversion_present.yml` (More info [below](###reading-the-number-of-a-specific-os-version) )
+To test the `itop_core_ispresent` role, you can use the demo `is_osversion_present.yml` (More info [below](#reading-the-number-of-a-specific-os-version) )
 
-To test the `itop.core.read` role, you can use the demo `display_hypervisor.yml` (More info [below](###show-information-about-one-hypervisor))
+To test the `itop_core_read` role, you can use the demo `display_hypervisor.yml` (More info [below](#show-information-about-one-hypervisor))
+
+To test the `itop_core_delete` role, you can use the demo `delete.virtualmachine.yml` (More info [below](#delete-a-virtual-machine))
 
 ## Usage
 
@@ -118,7 +120,7 @@ No changes where done in iTop.
 ### Reading the number of a specific OS Version
 
 This is a very simple example. The OSVersion name is set in the playbook so you don't need any external files.
-Remember that the expected results are on a clean installation of the Combodo's demoset.
+Remember that the expected results are on a clean installation of the Combodo's demo set.
 
 *** Warning : even if the returning value, `itop_found_items` seems realistically a number, Ansible's set_fact stores the value as a string.
 So, if you want to know if a CI is present, the correct test would be:
@@ -165,7 +167,7 @@ localhost                  : ok=8    changed=0    unreachable=0    failed=0    s
 ### Show information about one hypervisor
 
 Again a very simple example. The hypervisor name is set in the playbook so you don't need any external files.
-Remember that the expected results are on a clean installation of the Combodo's demoset.
+Remember that the expected results are on a clean installation of the Combodo's demo set.
 
 With `hypervisor: 'ESX1'` you can run the script this way:
 
@@ -214,4 +216,48 @@ skipping: [localhost]
 
 PLAY RECAP ****************************************************************************************************************
 localhost                  : ok=8    changed=0    unreachable=0    failed=0    skipped=3    rescued=0    ignored=0
+~~~
+
+### Delete a Virtual Machine
+
+***Warning : the role behind the deletion, `itop_core_delete` is still in an early stage for now. While it only call the corresponding well defined `core/delete` Combodo's API, I cannot say that this is bulletproof. Use at your own risk!***
+
+This role is the result of my own work, please do not ask Combodo's help!
+
+Again a very simple example. This time, we will remove the VirtualMachine that we builded as the first example.
+
+We will need some information about the Virtual Machine, fortunately, those information are already available in the configuration file VM_Ansible_Test.yml
+
+So, to suppress the virtual machine, you only have to launch:
+
+~~~bash
+ansible-playbook -e "@files/VM_Ansible_Test.yml" delete.virtualmachine.yml
+[WARNING]: provided hosts list is empty, only localhost is available. Note that the implicit localhost does not match 'all'
+
+PLAY [Delete a Virtual Machine in iTop] ***********************************************************************************
+……………………………
+TASK [Display deletion result] ********************************************************************************************
+ok: [localhost] => {
+    "msg": "Deletion return code: '0', return message: 'Deleted: 1 plus (for DB integrity) 4'"
+}
+
+PLAY RECAP ****************************************************************************************************************
+localhost                  : ok=12   changed=1    unreachable=0    failed=0    skipped=5    rescued=0    ignored=0   
+~~~
+
+Of course, if the VirtualMachine doesn't exist, then there is no changes:
+
+~~~bash
+ansible-playbook -e "@files/VM_Ansible_Test.yml" delete.virtualmachine.yml
+[WARNING]: provided hosts list is empty, only localhost is available. Note that the implicit localhost does not match 'all'
+
+PLAY [Delete a Virtual Machine in iTop] ***********************************************************************************
+……………………………
+TASK [Display deletion result] ********************************************************************************************
+ok: [localhost] => {
+    "msg": "Deletion return code: '0', return message: 'Found: 0'"
+}
+
+PLAY RECAP ****************************************************************************************************************
+localhost                  : ok=9    changed=0    unreachable=0    failed=0    skipped=8    rescued=0    ignored=0   
 ~~~
