@@ -1,0 +1,38 @@
+#
+# This playbook is a demonstration of the 'read' role.
+# this demo runs on the Hypervisor class
+#
+---
+- name: Queries hypervisors in iTop
+  hosts: localhost
+  gather_facts: false
+  vars:
+    # Based on the values in the Combodo's Demo Set
+    # organization name
+    org_name: 'Demo'
+    # should give information on one hypervisor
+    hypervisor: 'ESX1'
+    # At this time, there is no simple way to use a query
+    # with a 'LIKE' form. So no complex return on the
+    # hypervisor name.
+    # should give no information at all (an empty array)
+    # hypervisor: 'Proxmox4'
+
+  tasks:
+    - name: Set variables for the Hypervisor query
+      ansible.builtin.set_fact:
+        itop_obj_class: "Hypervisor"
+        itop_key: "SELECT Hypervisor"
+        itop_fields:
+          "name": "{{ hypervisor }}"
+          "organization_name":
+          "status":
+          "server_name":
+
+    - name: Call iTop role to read actual Hypervisors Value
+      ansible.builtin.import_role:
+        name: schirrms.combodo_ansible.itop_core_read
+
+    - name: Display Hypervisors values
+      ansible.builtin.debug:
+        var: itop_output_values

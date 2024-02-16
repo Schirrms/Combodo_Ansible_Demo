@@ -201,7 +201,7 @@ localhost                  : ok=9    changed=0    unreachable=0    failed=0    s
 Setting another value in the file for hypervisor, or changing the value on the command line:
 
 ~~~bash
-ansible-playbook display_hypervisor.yml -e 'hypervisor="unresistant_hypervisor"'
+ansible-playbook display_hypervisor.yml -e 'hypervisor="unesistant_hypervisor"'
 [WARNING]: provided hosts list is empty, only localhost is available. Note that the implicit localhost does not match 'all'
 
 PLAY [Queries hypervisors in iTop] ****************************************************************************************
@@ -216,6 +216,48 @@ skipping: [localhost]
 
 PLAY RECAP ****************************************************************************************************************
 localhost                  : ok=8    changed=0    unreachable=0    failed=0    skipped=3    rescued=0    ignored=0
+~~~
+
+### Display all Hypervisors
+
+Alternatively, you can also retrieve a complete class, with a little tvist on the 'itop_key' value, that should be set tou 'SELECT {ClassName}' (Or a filtered set if you put a OQL query).
+
+You'll then have to parse the `itop_output_values` array
+
+As an example, I created the `display_all_hypervisors.yml` playbook:
+
+~~~bash
+ansible-playbook display_all_hypervisors.yml 
+[WARNING]: provided hosts list is empty, only localhost is available. Note that the implicit localhost does not match 'all'
+
+PLAY [Queries hypervisors in iTop] ****************************************************************************************
+……………………
+TASK [Display Hypervisors values] *****************************************************************************************
+ok: [localhost] => {
+    "itop_output_values": [
+        {
+            "name": "ESX1",
+            "organization_name": "Demo",
+            "server_name": "Server1",
+            "status": "production"
+        },
+        {
+            "name": "ESX2",
+            "organization_name": "Demo",
+            "server_name": "Server3",
+            "status": "production"
+        },
+        {
+            "name": "ESX3",
+            "organization_name": "Demo",
+            "server_name": "",
+            "status": "production"
+        }
+    ]
+}
+
+PLAY RECAP *************************************************************************************************************
+localhost                  : ok=8    changed=0    unreachable=0    failed=0    skipped=2    rescued=0    ignored=0 
 ~~~
 
 ### Delete a Virtual Machine
