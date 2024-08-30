@@ -1,0 +1,108 @@
+#
+# This playbook is a demonstration of the 'read' role.
+# this demo runs on the Hypervisor class
+#
+---
+- name: Queries hypervisors in iTop three different ways
+  hosts: localhost
+  gather_facts: false
+  vars:
+    # Based on the values in the Combodo's Demo Set
+    # organization name
+    org_name: 'Demo'
+    # should give information on one hypervisor
+    hypervisor: 'ESX1'
+    # At this time, there is no simple way to use a query
+    # with a 'LIKE' form. So no complex return on the
+    # hypervisor name.
+    # should give no information at all (an empty array)
+    # hypervisor: 'Proxmox4'
+
+  tasks:
+    - name: Set the query key as a list of key - Value
+      ansible.builtin.set_fact:
+        itop_query:
+          "name": "{{ hypervisor }}"
+          "org_id":
+            "name": "{{ org_name }}"
+
+    - name: Display the query key
+      ansible.builtin.debug:
+        var: itop_query
+
+    - name: Call iTop role to read actual Hypervisor Value
+      ansible.builtin.import_role:
+        name: schirrms.combodo_ansible.itop_core
+        tasks_from: read
+      vars:
+        itop_core_read_obj_class: "Hypervisor"
+        itop_core_read_key: "{{ itop_query }}"
+        itop_core_read_fields:
+          "name": "{{ hypervisor }}"
+          "organization_name":
+          "status":
+          "server_name":
+
+    - name: Display Hypervisor values
+      ansible.builtin.debug:
+        var: itop_core_read_output_values
+
+    - name: Set the query key as a SELECT Query
+      ansible.builtin.set_fact:
+        itop_query: "SELECT Hypervisor WHERE name = '{{ hypervisor }}'"
+
+    - name: Display the query key
+      ansible.builtin.debug:
+        var: itop_query
+
+    - name: Call iTop role to read actual Hypervisor Value
+      ansible.builtin.import_role:
+        name: schirrms.combodo_ansible.itop_core
+        tasks_from: read
+      vars:
+        itop_core_read_obj_class: "Hypervisor"
+        itop_core_read_key: "{{ itop_query }}"
+        itop_core_read_fields:
+          "name": "{{ hypervisor }}"
+          "organization_name":
+          "status":
+          "server_name":
+
+    - name: Display Hypervisor values
+      ansible.builtin.debug:
+        var: itop_core_read_output_values
+
+    - name: Set the query key as an iTop ID
+      ansible.builtin.set_fact:
+        itop_query: "{{ itop_core_read_obj_key | first | default('') }}"
+
+    - name: Display the query key
+      ansible.builtin.debug:
+        var: itop_query
+
+    - name: The third method is only possible if there is an actual key
+      when:
+        - itop_query is defined
+        - itop_query | int > 0
+      block:
+        - name: Call iTop role to read actual Hypervisor Value
+          ansible.builtin.import_role:
+            name: schirrms.combodo_ansible.itop_core
+            tasks_from: read
+          vars:
+            itop_core_read_obj_class: "Hypervisor"
+            itop_core_read_key: "{{ itop_query }}"
+            itop_core_read_fields:
+              "name": "{{ hypervisor }}"
+              "organization_name":
+              "status":
+              "server_name":
+
+        - name: Display Hypervisor values
+          ansible.builtin.debug:
+            var: itop_core_read_output_values
+
+        - name: Display Hypervisor 0 Server name
+          ansible.builtin.debug:
+            var: itop_core_read_output_values[0].server_name
+          when: itop_core_read_output_values[0] is defined

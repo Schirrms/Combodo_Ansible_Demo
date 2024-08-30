@@ -6,7 +6,7 @@ vm_osfamily: "Ubuntu server"
 vm_osversion: "22.04 LTS"
 vm_cpu: "2"
 vm_ram: "1024"
-vm_move2prod: "2024-02-09"
+# vm_move2prod: "2024-02-09"
 vm_interfaces:
   - { "name":"ens192", "mac":"ef:34:56:78:90:ab", "speed": "10000" }
   - { "name":"eth0", "mac":"11:22:33:44:55:66", "speed": "1000" }

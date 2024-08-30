@@ -1,0 +1,35 @@
+#
+# This playbook is an example on how to use itop_core_delete role to remove virtual Machine
+# The following parameters need to be set before calling the playbook
+#  - obj_class = Class of CI to be written
+#  - key = Set of attributes to be used for the reconciliation
+# These can be set manually or result from the output of other playbooks, modules...
+#
+---
+- name: Delete a Virtual Machine in iTop
+  hosts: localhost
+  gather_facts: false
+  # By default, the role only simulate the deletion
+  # if you really want to delete, set the next var to false
+  vars:
+    itop_core_delete_simulate: "false"
+
+  tasks:
+    - name: Call iTop role to delete the VM
+      ansible.builtin.import_role:
+        name: schirrms.combodo_ansible.itop_core
+        tasks_from: delete
+      vars:
+        itop_core_delete_obj_class: "VirtualMachine"
+        itop_core_delete_key:
+          "name": "{{ vm_name }}"
+          "org_id":
+            "name": "{{ org_name }}"
+          "virtualhost_id":
+            "name": "{{ vm_host }}"
+        # Be very careful…
+        itop_core_delete_simulate: "false"
+
+    - name: Display deletion result
+      ansible.builtin.debug:
+        msg: "Deletion return code: '{{ itop_core_delete_code }}', return message: '{{ itop_core_delete_message }}'"
